@@ -42,7 +42,7 @@ func (mps *MitmProxyServer) Configure(c app.Config) error {
 	if err != nil {
 		return err
 	}
-	log.Info().Stringer("endpoint", mps.Proxy()).Msg("configured MITM Proxy")
+	log.Info().Stringer("endpoint", mps).Msg("configured MITM Proxy")
 	return nil
 }
 
