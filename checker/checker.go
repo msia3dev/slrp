@@ -177,7 +177,7 @@ func (f twoPass) Check(ctx context.Context, proxy pmux.Proxy) (time.Duration, er
 type federated []*simple
 
 func newFederated(sites []string, client httpClient, ip string) (out federated) {
-	for _, v := range firstPass {
+	for _, v := range sites {
 		out = append(out, &simple{
 			client: client,
 			page:   v,
