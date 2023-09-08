@@ -16,7 +16,6 @@ import (
 	"github.com/nfx/slrp/pmux"
 	"github.com/rs/zerolog/log"
 
-	"github.com/corpix/uarand"
 	"github.com/microcosm-cc/bluemonday"
 )
 
@@ -209,7 +208,7 @@ func (sc *simple) Check(ctx context.Context, proxy pmux.Proxy) (time.Duration, e
 	if err != nil {
 		return 0, err
 	}
-	req.Header.Set("User-Agent", uarand.GetRandom())
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Safari/537.36")
 	res, err := sc.client.Do(req)
 	if err != nil {
 		return 0, err
