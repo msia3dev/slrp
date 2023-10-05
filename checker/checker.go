@@ -3,6 +3,7 @@ package checker
 import (
 	"bufio"
 	"context"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"math/rand"
@@ -34,13 +35,14 @@ type httpClient interface {
 var (
 	firstPass = []string{
 		// these check for ext ip, but don't show headers
-		"https://ifconfig.me/ip", // okhttp
+		//"https://httpbin.org/ip",
+		//"https://ifconfig.me/ip", // okhttp
 		//"https://ifconfig.io/ip",
-		"https://myexternalip.com/raw", // okhttp
-		"https://ipv4.icanhazip.com/",  // okhttp
-		"https://ipinfo.io/ip",         // okhttp
-		"https://api.ipify.org/",       // okhttp
-		"https://wtfismyip.com/text",   // okhttp
+		//"https://myexternalip.com/raw", // okhttp
+		//"https://ipv4.icanhazip.com/",  // okhttp
+		//"https://ipinfo.io/ip",         // okhttp
+		"https://api.ipify.org/", // okhttp
+		//"https://wtfismyip.com/text",   // okhttp
 	}
 	secondPass = map[string]string{
 		// checks for X-Forwarded-For and alikes
@@ -88,6 +90,7 @@ func (cc *configurableChecker) Configure(conf app.Config) error {
 			"https://ifconfig.me/all",
 			"https://ifconfig.io/all.json",
 		}, cc.client, ip),
+		"binance": newBinance(ip, cc.client, "https://www.binance.com/en"),
 	}
 	strategyName := conf.StrOr("strategy", "simple")
 	strategy, ok := strategies[strategyName]
@@ -171,6 +174,70 @@ func (f twoPass) Check(ctx context.Context, proxy pmux.Proxy) (time.Duration, er
 		return t, fmt.Errorf("second: %w", err)
 	}
 	return t, nil
+}
+
+type binance struct {
+	first  federated
+	page   string
+	client httpClient
+}
+
+func newBinance(ip string, client httpClient, page string) binance {
+	var res binance
+	for _, v := range firstPass {
+		res.first = append(res.first, &simple{
+			client: client,
+			page:   v,
+			ip:     ip,
+		})
+	}
+	res.page = page
+	res.client = client
+	return res
+}
+
+func (sc binance) Check(ctx context.Context, proxy pmux.Proxy) (time.Duration, error) {
+	t, err := sc.first.Check(ctx, proxy)
+	if isTimeout(err) {
+		return t, err
+	}
+	if err != nil {
+		return t, fmt.Errorf("first: %w", err)
+	}
+
+	start := time.Now()
+	page := sc.page
+
+	req, err := http.NewRequestWithContext(proxy.InContext(ctx), "GET", page, nil)
+	if err != nil {
+		return 0, err
+	}
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.106 Safari/537.36")
+	res, err := sc.client.Do(req)
+	if err != nil {
+		return 0, err
+	}
+	defer res.Body.Close()
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return 0, err
+	}
+	if strings.Compare(res.Header.Get("X-Gateway"), "traefik") != 0 {
+		log.Info().Fields(res.Header).Msg("headers")
+		return 0, errors.New("gateway header not found")
+	}
+
+	stringBody := string(body)
+	if !strings.Contains(stringBody, "binance") {
+		return 0, errors.New("binance body not found")
+	}
+	if isTimeout(err) {
+		return 0, err
+	}
+	if err != nil {
+		return 0, err
+	}
+	return time.Now().Sub(start), nil // TODO: speed is always the same?...
 }
 
 type federated []*simple
