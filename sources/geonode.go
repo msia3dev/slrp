@@ -44,8 +44,7 @@ type geoNodeResultPage struct {
 }
 
 func init() {
-	Sources = append(Sources, Source{
-		ID:        23,
+	addSources(Source{
 		Homepage:  "https://geonode.com/free-proxy-list/",
 		Frequency: 3 * time.Hour,
 		Seed:      true,
@@ -63,7 +62,12 @@ func geoNode(ctx context.Context, h *http.Client) (found []pmux.Proxy, err error
 	for {
 		log.Info().Int("page", page).Msg("Loading geocode database")
 		qs.Set("page", fmt.Sprint(page))
-		r, err := h.Get(geoNodeURL + "?" + qs.Encode())
+		req, err := http.NewRequest("GET", geoNodeURL+"?"+qs.Encode(), nil)
+		if err != nil {
+			return nil, err
+		}
+		req.Header.Add("Origin", "https://geonode.com")
+		r, err := h.Do(req)
 		if err != nil {
 			return nil, err
 		}
@@ -81,11 +85,8 @@ func geoNode(ctx context.Context, h *http.Client) (found []pmux.Proxy, err error
 		}
 		page = results.Page + 1
 		for _, d := range results.Data {
-			if !d.IsGood() {
-				continue
-			}
 			found = append(found, d.Proxies()...)
 		}
 	}
-	return
+	return found, nil
 }

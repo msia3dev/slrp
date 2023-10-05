@@ -4,24 +4,22 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/nfx/slrp/pmux"
 	"net/http"
 	"regexp"
 	"strings"
-	"time"
-
-	"github.com/nfx/slrp/pmux"
 
 	"github.com/dop251/goja"
 )
 
 func init() {
-	Sources = append(Sources, Source{
-		ID:        5,
-		Homepage:  "https://premproxy.com/list/",
-		UrlPrefix: "https://premproxy.com/",
-		Frequency: 6 * time.Hour,
-		Feed:      premproxy,
-	})
+	//Sources = append(Sources, Source{
+	//	ID:        5,
+	//	Homepage:  "https://premproxy.com/list/",
+	//	UrlPrefix: "https://premproxy.com/",
+	//	Frequency: 6 * time.Hour,
+	//	Feed:      premproxy,
+	//})
 }
 
 func deobfuscatePorts(script string) (map[string]string, error) {

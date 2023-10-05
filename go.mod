@@ -3,10 +3,13 @@ module github.com/nfx/slrp
 go 1.20
 
 require (
+	github.com/PuerkitoBio/goquery v1.8.1
 	github.com/bdandy/go-socks4 v1.2.3
 	github.com/corpix/uarand v0.2.0
 	github.com/dop251/goja v0.0.0-20230605162241-28ee0ee714f3
 	github.com/ghodss/yaml v1.0.0
+	github.com/go-rod/rod v0.114.3
+	github.com/go-rod/stealth v0.4.9
 	github.com/gorilla/mux v1.8.0
 	github.com/maxmind/mmdbwriter v0.0.0-20230605153824-1949661752e7
 	github.com/microcosm-cc/bluemonday v1.0.25
@@ -23,6 +26,7 @@ require (
 )
 
 require (
+	github.com/andybalholm/cascadia v1.3.1 // indirect
 	github.com/apex/log v1.9.0 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/bdandy/go-errors v1.2.2 // indirect
@@ -45,6 +49,11 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/ulikunitz/xz v0.5.11 // indirect
+	github.com/ysmood/fetchup v0.2.3 // indirect
+	github.com/ysmood/goob v0.4.0 // indirect
+	github.com/ysmood/got v0.34.1 // indirect
+	github.com/ysmood/gson v0.7.3 // indirect
+	github.com/ysmood/leakless v0.8.0 // indirect
 	go4.org/netipx v0.0.0-20230303233057-f1b76eb4bb35 // indirect
 	golang.org/x/crypto v0.12.0 // indirect
 	golang.org/x/sys v0.11.0 // indirect

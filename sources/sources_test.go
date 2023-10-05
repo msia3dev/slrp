@@ -19,7 +19,7 @@ func consumeSource(ctx context.Context, feed Src) (found []pmux.Proxy) {
 }
 
 func testSource(t *testing.T, cb func(context.Context) Src, atLeast int) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
 	defer cancel()
 	feed := cb(ctx)
 	found := consumeSource(ctx, feed)

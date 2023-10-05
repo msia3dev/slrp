@@ -16,8 +16,7 @@ import (
 var proxyNovaPrefix = "https://proxynova.com/proxy-server-list"
 
 func init() {
-	Sources = append(Sources, Source{
-		ID:        7,
+	addSources(Source{
 		Homepage:  "http://proxynova.com/",
 		UrlPrefix: "https://proxynova.com",
 		Frequency: 6 * time.Hour,

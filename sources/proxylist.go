@@ -16,8 +16,7 @@ import (
 var proxyListPages []string
 
 func init() {
-	Sources = append(Sources, Source{
-		ID:        6,
+	addSources(Source{
 		Homepage:  "https://proxy-list.org/",
 		Frequency: 5 * time.Minute,
 		Feed:      proxyListOrg,

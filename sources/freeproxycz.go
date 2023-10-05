@@ -4,22 +4,19 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"github.com/nfx/slrp/pmux"
 	"net/http"
 	"strings"
-	"time"
-
-	"github.com/nfx/slrp/pmux"
 )
 
 var freeProxyCzPages []string
 
 func init() {
-	Sources = append(Sources, Source{
-		ID:        2,
-		Homepage:  "http://free-proxy.cz/",
-		Frequency: 1 * time.Hour,
-		Feed:      freeProxyCz,
-	})
+	//addSources(Source{
+	//	Homepage:  "http://free-proxy.cz/",
+	//	Frequency: 1 * time.Hour,
+	//	Feed:      freeProxyCz,
+	//})
 
 	freeProxyCzPages = []string{}
 	pattern := "http://free-proxy.cz/en/proxylist/main/date/%d"

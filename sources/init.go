@@ -42,6 +42,17 @@ func (s Source) Name() string {
 
 var Sources = []Source{}
 
+func addSource(source Source) {
+	source.ID = len(Sources) + 1
+	Sources = append(Sources, source)
+}
+
+func addSources(sources ...Source) {
+	for _, s := range sources {
+		addSource(s)
+	}
+}
+
 func ByID(id int) Source {
 	for _, s := range Sources {
 		if s.ID != id {

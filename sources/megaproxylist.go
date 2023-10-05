@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"net"
 	"net/http"
+	"regexp"
 	"time"
 
 	"github.com/nfx/slrp/pmux"
@@ -17,15 +18,16 @@ import (
 )
 
 func init() {
-	Sources = append(Sources, Source{
-		ID:        65,
-		Homepage:  "https://www.megaproxylist.net",
-		Frequency: 24 * time.Hour,
-		Feed:      simpleGen(megaproxylist),
-	})
+	//Sources = append(Sources, Source{
+	//	ID:        65,
+	//	Homepage:  "https://www.megaproxylist.net",
+	//	Frequency: 24 * time.Hour,
+	//	Feed:      simpleGen(megaproxylist),
+	//})
 }
 
-var megaproxylistUrl = fmt.Sprintf("https://www.megaproxylist.net/download/megaproxylist-csv-%s_SDACH.zip", time.Now().Format("20060102"))
+var megaproxylistUrl = "https://www.megaproxylist.net/download-proxy-list.aspx"
+var downloadUrlRegex = regexp.MustCompile(`/download/megaproxylist-.*-.*_(?P<hash>.*).zip`)
 
 func unzipInMemory(body []byte) ([]byte, error) {
 	zipReader, err := zip.NewReader(bytes.NewReader(body), int64(len(body)))
@@ -75,13 +77,37 @@ func megaproxylist(ctx context.Context, h *http.Client) (found []pmux.Proxy, err
 
 	resp, err := h.Get(megaproxylistUrl)
 	if err != nil {
+		log.Error().Err(err).Msg("")
+		return nil, err
+	}
+	if resp.Body == nil {
+		log.Error().Err(err).Msg("")
+		return nil, fmt.Errorf("empty body")
+	}
+	body, err := io.ReadAll(resp.Body)
+	_ = resp.Body.Close()
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response body: %w", err)
+	}
+
+	matches := downloadUrlRegex.FindStringSubmatch(string(body))
+	if len(matches) == 0 {
+		return nil, fmt.Errorf("download url not found")
+	}
+	hashIndex := downloadUrlRegex.SubexpIndex("hash")
+	hash := matches[hashIndex]
+
+	downloadUrl := fmt.Sprintf("https://www.megaproxylist.net/download/megaproxylist-csv-%s_%s.zip", time.Now().Format("20060102"), hash)
+
+	resp, err = h.Get(downloadUrl)
+	if err != nil {
 		return nil, err
 	}
 	if resp.Body == nil {
 		return nil, fmt.Errorf("empty body")
 	}
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read response body: %w", err)
 	}
@@ -106,11 +132,13 @@ func megaproxylist(ctx context.Context, h *http.Client) (found []pmux.Proxy, err
 		}
 
 		if len(record) != 4 {
+			log.Info().Msg("length skipping")
 			continue
 		}
 
 		addr, err := getIpAddr(ctx, record[0])
 		if err != nil {
+			log.Error().Msg(err.Error())
 			continue
 		}
 

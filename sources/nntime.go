@@ -3,24 +3,21 @@ package sources
 import (
 	"context"
 	"fmt"
+	"github.com/nfx/slrp/pmux"
 	"net/http"
 	"regexp"
 	"strings"
-	"time"
-
-	"github.com/nfx/slrp/pmux"
 )
 
 var nntimePages = 10
 var nntimePattern = "http://nntime.com/proxy-updated-%02d.htm"
 
 func init() {
-	Sources = append(Sources, Source{
-		ID:        4,
-		Homepage:  "http://nntime.com",
-		Frequency: 6 * time.Hour,
-		Feed:      newNetTimeNew,
-	})
+	//addSources(Source{
+	//	Homepage:  "http://nntime.com",
+	//	Frequency: 6 * time.Hour,
+	//	Feed:      newNetTimeNew,
+	//})
 }
 
 func newNetTimeNew(ctx context.Context, h *http.Client) Src {

@@ -10,8 +10,7 @@ import (
 var proxyDbPages = map[string]string{}
 
 func init() {
-	Sources = append(Sources, Source{
-		ID:        13,
+	addSources(Source{
 		Homepage:  "http://proxydb.net/",
 		Frequency: 6 * time.Hour,
 		Feed:      proxyDb,

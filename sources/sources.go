@@ -1,37 +1,46 @@
 package sources
 
 import (
+	"context"
+	"net/http"
 	"time"
 )
 
 func init() {
-	Sources = append(Sources, Source{
-		ID:        9,
-		Homepage:  "http://foxtools.ru/",
-		UrlPrefix: "http://api.foxtools.ru",
-		Frequency: 12 * time.Hour,
-		Feed:      httpProxyRegexFeed("http://api.foxtools.ru/v2/Proxy.txt", "1 1"),
-	}, Source{
-		ID:        10,
-		name:      "sunny9577",
-		Homepage:  "https://github.com/sunny9577/proxy-scraper",
-		UrlPrefix: "https://sunny9577.github.io/",
-		Frequency: 3 * time.Hour,
-		Seed:      true,
-		Feed:      httpProxyRegexFeed("https://sunny9577.github.io/proxy-scraper/proxies.txt", ":"),
-	}, Source{
-		ID:        19,
-		Seed:      true,
-		name:      "anonymous-free-proxy",
-		Homepage:  "https://free-proxy-list.net/anonymous-proxy.html",
-		Frequency: 30 * time.Minute,
-		Feed:      httpProxyRegexFeed("https://free-proxy-list.net/anonymous-proxy.html", "Anonymous Proxy"),
-	}, Source{
-		ID:        21,
-		name:      "uk-proxy",
-		Seed:      true,
-		Homepage:  "https://free-proxy-list.net/uk-proxy.html",
-		Frequency: 30 * time.Minute,
-		Feed:      httpProxyRegexFeed("https://free-proxy-list.net/uk-proxy.html", "UK Proxy List"),
-	})
+	addSources(
+		Source{
+			Seed:      true,
+			name:      "free-proxy-list",
+			Homepage:  "https://free-proxy-list.net",
+			Frequency: 30 * time.Minute,
+			Feed:      httpProxyRegexFeed("https://free-proxy-list.net", "Free Proxy List"),
+		}, Source{
+			Seed:      true,
+			name:      "anonymous-free-proxy",
+			Homepage:  "https://free-proxy-list.net/anonymous-proxy.html",
+			Frequency: 30 * time.Minute,
+			Feed:      httpProxyRegexFeed("https://free-proxy-list.net/anonymous-proxy.html", "Anonymous Proxy"),
+		}, Source{
+			name:      "uk-proxy",
+			Seed:      true,
+			Homepage:  "https://free-proxy-list.net/uk-proxy.html",
+			Frequency: 30 * time.Minute,
+			Feed:      httpProxyRegexFeed("https://free-proxy-list.net/uk-proxy.html", "UK Proxy List"),
+		}, Source{
+			name:      "ssl-proxy",
+			Seed:      true,
+			Homepage:  "https://www.sslproxies.org/",
+			Frequency: 30 * time.Minute,
+			Feed: func(ctx context.Context, h *http.Client) Src {
+				return gen(regexFeed(ctx, h, "https://www.sslproxies.org/", "https", "SSL Proxy"))
+			},
+		}, Source{
+			Seed:      true,
+			name:      "socks-proxy-list",
+			Homepage:  "https://www.socks-proxy.net/",
+			Frequency: 30 * time.Minute,
+			Feed: func(ctx context.Context, h *http.Client) Src {
+				return gen(regexFeed(ctx, h, "https://www.socks-proxy.net/", "socks4", "Socks Proxy"))
+			},
+		})
 }

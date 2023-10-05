@@ -14,8 +14,7 @@ import (
 var fateZeroURL = "https://raw.githubusercontent.com/fate0/proxylist/master/proxy.list"
 
 func init() {
-	Sources = append(Sources, Source{
-		ID:        22,
+	addSources(Source{
 		name:      "fate0",
 		Homepage:  "https://github.com/fate0/proxylist",
 		Frequency: 15 * time.Minute,

@@ -15,8 +15,7 @@ import (
 var checkerProxyURL = "https://checkerproxy.net/"
 
 func init() {
-	Sources = append(Sources, Source{
-		ID:        1,
+	addSources(Source{
 		Homepage:  "https://checkerproxy.net/",
 		Frequency: 6 * time.Hour,
 		Seed:      true,

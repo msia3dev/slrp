@@ -8,8 +8,7 @@ import (
 )
 
 func init() {
-	Sources = append(Sources, Source{
-		ID:        3,
+	addSources(Source{
 		Homepage:  "https://my-proxy.com/",
 		Frequency: 1 * time.Hour,
 		Feed:      myProxyCom,

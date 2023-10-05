@@ -10,8 +10,7 @@ import (
 )
 
 func init() {
-	Sources = append(Sources, Source{
-		ID:        16,
+	addSources(Source{
 		Homepage:  "https://webanetlabs.net/publ/24",
 		UrlPrefix: "https://webanetlabs.net",
 		Frequency: 24 * time.Hour,

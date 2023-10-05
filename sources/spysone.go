@@ -23,16 +23,14 @@ var spysOnePageURL string
 var spysOneSleep func()
 
 func init() {
-	Sources = append(Sources,
+	addSources(
 		Source{
-			ID:        14,
 			Homepage:  "http://spys.one",
 			Frequency: 3 * time.Hour,
 			Feed:      simpleGen(spysOne),
 			Seed:      true,
 		},
 		Source{
-			ID:        15,
 			name:      "spys.me",
 			Homepage:  "https://github.com/clarketm/proxy-list/",
 			UrlPrefix: "https://raw.githubusercontent.com/clarketm/proxy-list",
